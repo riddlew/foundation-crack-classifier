@@ -1,0 +1,14 @@
+training_images/**
+models/**
+reports/**
+input/**
+__pycache__/
+.pytest_cache/
+*.pyc
+
+!Dockerfile
+!pyproject.toml
+!src/
+!src/**
+!tests/
+!tests/**

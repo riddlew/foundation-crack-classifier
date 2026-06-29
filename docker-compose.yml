@@ -1,0 +1,20 @@
+services:
+  classifier:
+    build:
+      context: ./classifier
+    image: foundation-crack-classifier:local
+    working_dir: /app
+    volumes:
+      - ./classifier/training_images:/app/training_images
+      - ./classifier/models:/app/models
+      - ./classifier/reports:/app/reports
+      - ./classifier/input:/app/input
+      - ./classifier/src:/app/src
+      - ./classifier/tests:/app/tests
+    environment:
+      PYTHONPATH: /app/src
+      FCC_DATA_DIR: /app/training_images
+      FCC_MODEL_DIR: /app/models
+      FCC_REPORT_DIR: /app/reports
+      FCC_INPUT_DIR: /app/input
+    command: pytest -q
