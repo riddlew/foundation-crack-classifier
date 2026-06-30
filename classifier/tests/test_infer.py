@@ -327,6 +327,33 @@ def test_main_loads_checkpoint_applies_thresholds_and_prints_json(
     assert json.loads(capsys.readouterr().out) == result.to_dict()
 
 
+class ConstantModel(torch.nn.Module):
+    def forward(self, batch):
+        return torch.tensor([[4.0, 1.0, 0.5, -1.0]], dtype=torch.float32)
+
+
+def identity_transform(image):
+    assert image.mode == "RGB"
+    return torch.zeros((3, 32, 32), dtype=torch.float32)
+
+
+def test_predict_probabilities_from_image_accepts_pil_image():
+    from foundation_crack_classifier.infer import predict_probabilities_from_image
+
+    image = Image.new("RGB", (16, 16), color="white")
+
+    probabilities = predict_probabilities_from_image(
+        ConstantModel(),
+        image,
+        identity_transform,
+        torch.device("cpu"),
+    )
+
+    assert set(probabilities) == set(LABELS)
+    assert probabilities["level1"] > probabilities["level2"]
+    assert round(sum(probabilities.values()), 6) == 1.0
+
+
 class _FakeLogitModel:
     def __init__(self, logits: torch.Tensor) -> None:
         self.logits = logits

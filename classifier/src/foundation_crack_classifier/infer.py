@@ -62,14 +62,9 @@ def main(argv: list[str] | None = None) -> None:
     print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
 
 
-def predict_probabilities(model, image_path: Path, transform, device) -> dict[str, float]:
+def predict_probabilities_from_image(model, image: Image.Image, transform, device) -> dict[str, float]:
     model.eval()
-    try:
-        with Image.open(image_path) as image:
-            image = image.convert("RGB")
-            tensor = transform(image)
-    except OSError as exc:
-        raise SystemExit(f"Unable to read image file: {image_path}") from exc
+    tensor = transform(image.convert("RGB"))
 
     with torch.no_grad():
         logits = model(tensor.unsqueeze(0).to(device))
@@ -79,6 +74,14 @@ def predict_probabilities(model, image_path: Path, transform, device) -> dict[st
         label: float(probabilities[index])
         for index, label in enumerate(LABELS)
     }
+
+
+def predict_probabilities(model, image_path: Path, transform, device) -> dict[str, float]:
+    try:
+        with Image.open(image_path) as image:
+            return predict_probabilities_from_image(model, image, transform, device)
+    except OSError as exc:
+        raise SystemExit(f"Unable to read image file: {image_path}") from exc
 
 
 if __name__ == "__main__":
