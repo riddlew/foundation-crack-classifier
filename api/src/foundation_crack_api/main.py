@@ -59,7 +59,7 @@ async def classify(
                     error=None,
                 )
             )
-        except (ImageDecodeError, ValueError) as exc:
+        except ImageDecodeError as exc:
             results.append(
                 FileClassificationResponse(
                     filename=upload.filename or "uploaded-image",

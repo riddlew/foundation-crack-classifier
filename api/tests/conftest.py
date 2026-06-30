@@ -3,13 +3,14 @@ from collections.abc import Iterator
 import pytest
 from fastapi.testclient import TestClient
 
+from foundation_crack_api.classifier_service import ImageDecodeError
 from foundation_crack_api.main import app, get_classifier_service
 
 
 class FakeClassifierService:
     def classify_bytes(self, image_bytes: bytes) -> dict[str, object]:
         if image_bytes == b"bad image":
-            raise ValueError("Unable to read image file.")
+            raise ImageDecodeError("Unable to read image file.")
         return {
             "severity_level": "Level 2",
             "urgency": "contact_soon",
