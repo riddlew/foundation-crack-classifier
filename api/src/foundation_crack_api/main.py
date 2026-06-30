@@ -3,7 +3,8 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Annotated, Protocol
 
-from fastapi import Depends, FastAPI, File, UploadFile
+from fastapi import Depends, FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 from foundation_crack_api.classifier_service import ClassifierService, ImageDecodeError
 from foundation_crack_api.config import Settings
@@ -32,6 +33,13 @@ def get_classifier_service() -> ClassifierService:
 
 app = FastAPI(title="Foundation Crack Classifier API")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8001"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
@@ -42,6 +50,7 @@ def health() -> HealthResponse:
 async def classify(
     files: Annotated[list[UploadFile], File()],
     classifier: Annotated[SupportsClassification, Depends(get_classifier_service)],
+    notes: Annotated[str | None, Form()] = None,
 ) -> ClassifyResponse:
     # classify_bytes is synchronous and CPU-bound. For a local single-user
     # service this is fine. For concurrent use, move to run_in_threadpool.

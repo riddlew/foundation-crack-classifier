@@ -62,3 +62,36 @@ def test_classify_requires_files_field(client):
     response = client.post("/classify")
 
     assert response.status_code == 422
+
+
+def test_classify_accepts_optional_notes(client):
+    response = client.post(
+        "/classify",
+        files=[("files", ("photo.jpg", b"fake image bytes", "image/jpeg"))],
+        data={"notes": "image #1 shows the east wall"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["results"][0]["ok"] is True
+
+
+def test_cors_header_present_on_response(client):
+    response = client.get(
+        "/health",
+        headers={"Origin": "http://localhost:8001"},
+    )
+
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:8001"
+
+
+def test_cors_preflight(client):
+    response = client.options(
+        "/classify",
+        headers={
+            "Origin": "http://localhost:8001",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:8001"
