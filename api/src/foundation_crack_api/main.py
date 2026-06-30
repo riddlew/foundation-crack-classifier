@@ -50,7 +50,7 @@ def health() -> HealthResponse:
 async def classify(
     files: Annotated[list[UploadFile], File()],
     classifier: Annotated[SupportsClassification, Depends(get_classifier_service)],
-    notes: Annotated[str | None, Form()] = None,
+    notes: Annotated[str | None, Form()] = None,  # accepted and forwarded; classifier use is out of scope here
 ) -> ClassifyResponse:
     # classify_bytes is synchronous and CPU-bound. For a local single-user
     # service this is fine. For concurrent use, move to run_in_threadpool.
