@@ -9,7 +9,7 @@
       class="drop-zone"
       :class="{ 'drop-zone--active': isDragging, 'drop-zone--loading': loading }"
       @dragover.prevent
-      @dragenter.prevent="dragDepth++"
+      @dragenter.prevent="dragDepth++; isDragging = true"
       @dragleave.prevent="if (--dragDepth === 0) isDragging = false"
       @drop.prevent="onDrop"
       @click="!loading && fileInput?.click()"
@@ -88,6 +88,7 @@ function removeFile(index: number) {
 function onDrop(e: DragEvent) {
   dragDepth.value = 0
   isDragging.value = false
+  if (loading.value) return
   if (e.dataTransfer?.files) addFiles(e.dataTransfer.files)
 }
 
