@@ -30,4 +30,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src", "../classifier/src"]
+pythonpath = ["src", "/app/classifier_src"]
