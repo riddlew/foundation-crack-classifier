@@ -98,4 +98,48 @@ describe('useClassifier', () => {
     expect(error.value).toBe('Server error: 500')
     expect(mockPush).not.toHaveBeenCalled()
   })
+
+  it('sets loading to true while the fetch is in-flight', async () => {
+    let resolveJson!: (v: unknown) => void
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => new Promise(r => { resolveJson = r }),
+      }),
+    )
+    const { classify, loading } = useClassifier()
+    const promise = classify([new File(['b'], 'x.jpg')], '')
+    expect(loading.value).toBe(true)
+    await Promise.resolve() // let the fetch microtask settle so json() is called
+    resolveJson({ results: [] })
+    await promise
+    expect(loading.value).toBe(false)
+  })
+
+  it('resets loading to false after network failure', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Failed to fetch')))
+    const { classify, loading } = useClassifier()
+    await classify([new File(['b'], 'x.jpg')], '')
+    expect(loading.value).toBe(false)
+  })
+
+  it('resets loading to false after non-2xx response', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500 }))
+    const { classify, loading } = useClassifier()
+    await classify([new File(['b'], 'x.jpg')], '')
+    expect(loading.value).toBe(false)
+  })
+
+  it('appends all files to FormData', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ results: [] }) }),
+    )
+    const { classify } = useClassifier()
+    const files = [new File(['a'], 'a.jpg'), new File(['b'], 'b.jpg')]
+    await classify(files, '')
+    const body = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body as FormData
+    expect(body.getAll('files')).toHaveLength(2)
+  })
 })

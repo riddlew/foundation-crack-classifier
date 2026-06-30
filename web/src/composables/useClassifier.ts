@@ -35,7 +35,7 @@ export function useClassifier() {
       const data: ClassifyResponse = await response.json()
       classifyResults.value = data
       classifyNotes.value = notes.trim()
-      router.push('/results')
+      await router.push('/results')
     } catch {
       error.value = 'Network error — could not reach the classifier service.'
     } finally {

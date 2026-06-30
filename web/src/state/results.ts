@@ -2,8 +2,8 @@ import { ref } from 'vue'
 
 export interface ClassifierResult {
   severity_level: string
-  urgency: string
-  final_label: string
+  urgency: 'inspection_recommended' | 'contact_soon' | 'contact_immediately' | 'unable_to_assess'
+  final_label: 'level1' | 'level2' | 'level3' | 'unclear'
   confidence: number
   raw_probabilities: Record<string, number>
   why_this_result: string
