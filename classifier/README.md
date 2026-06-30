@@ -95,3 +95,32 @@ Evaluation writes:
 
 - `reports/evaluation.json`
 - `reports/confusion_matrix.png`
+
+## Local API
+
+Start the API service from the repository root:
+
+```bash
+docker compose up api
+```
+
+Health check:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Classify one or more images:
+
+```bash
+curl -X POST http://localhost:8000/classify \
+  -F "files=@classifier/input/level-1_1.jpg"
+```
+
+```bash
+curl -X POST http://localhost:8000/classify \
+  -F "files=@classifier/input/level-1_1.jpg" \
+  -F "files=@classifier/input/level-2_1.jpg"
+```
+
+The API does not store uploaded images or classification results. It reads uploaded files in memory, returns a response, and discards the file bytes.
