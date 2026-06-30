@@ -6,7 +6,7 @@ import torch
 from PIL import Image
 
 import foundation_crack_classifier.infer as infer_module
-from foundation_crack_classifier.infer import main, parse_args, predict_probabilities
+from foundation_crack_classifier.infer import main, parse_args, predict_probabilities, predict_probabilities_from_image
 from foundation_crack_classifier.labels import LABELS
 from foundation_crack_classifier.schemas import InferenceResult
 
@@ -338,8 +338,6 @@ def identity_transform(image):
 
 
 def test_predict_probabilities_from_image_accepts_pil_image():
-    from foundation_crack_classifier.infer import predict_probabilities_from_image
-
     image = Image.new("RGB", (16, 16), color="white")
 
     probabilities = predict_probabilities_from_image(
