@@ -18,3 +18,20 @@ services:
       FCC_REPORT_DIR: /app/reports
       FCC_INPUT_DIR: /app/input
     command: pytest -q
+
+  api:
+    build:
+      context: ./api
+    image: foundation-crack-api:local
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api/src:/app/src
+      - ./api/tests:/app/tests
+      - ./classifier/src:/app/classifier_src
+      - ./classifier/models:/app/models
+    environment:
+      PYTHONPATH: /app/src:/app/classifier_src
+      FCC_API_MODEL_PATH: /app/models/crack_severity_model.pt
+    command: uvicorn foundation_crack_api.main:app --host 0.0.0.0 --port 8000
