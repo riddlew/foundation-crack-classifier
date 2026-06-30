@@ -20,10 +20,10 @@ def test_decode_image_returns_rgb_pil_image():
 
 
 def test_decode_image_rejects_empty_bytes():
-    with pytest.raises(ImageDecodeError, match="Uploaded file was empty."):
+    with pytest.raises(ImageDecodeError, match=r"Uploaded file was empty\."):
         decode_image(b"")
 
 
 def test_decode_image_rejects_invalid_image_bytes():
-    with pytest.raises(ImageDecodeError, match="Unable to read image file."):
+    with pytest.raises(ImageDecodeError, match=r"Unable to read image file\."):
         decode_image(b"not an image")
