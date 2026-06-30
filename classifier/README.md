@@ -98,10 +98,12 @@ Evaluation writes:
 
 ## Local API
 
-Start the API service from the repository root:
+A trained model must exist at `classifier/models/crack_severity_model.pt` before classify requests will work (the health check does not require it). See the Docker Commands section above for how to train the model.
+
+Start the API service in the background from the repository root:
 
 ```bash
-docker compose up api
+docker compose up -d api
 ```
 
 Health check:
@@ -110,7 +112,7 @@ Health check:
 curl http://localhost:8000/health
 ```
 
-Classify one or more images:
+Classify one or more images (run from the repository root so the relative paths resolve correctly):
 
 ```bash
 curl -X POST http://localhost:8000/classify \
