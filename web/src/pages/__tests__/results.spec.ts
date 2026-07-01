@@ -37,6 +37,7 @@ const validResult: ClassifyResponse = {
 beforeEach(() => {
   mockReplace.mockReset()
   mockPush.mockReset()
+  classifyResults.value = null
   classifyNotes.value = ''
 })
 
@@ -85,5 +86,13 @@ describe('results page', () => {
     expect(wrapper.html()).toContain('Could not process image')
     expect(wrapper.html()).toContain('bad.jpg')
     expect(wrapper.html()).toContain('Decode failed')
+  })
+
+  it('clears results and navigates home on back', async () => {
+    classifyResults.value = validResult
+    const wrapper = mount(ResultsPage)
+    await wrapper.find('.back-link').trigger('click')
+    expect(classifyResults.value).toBeNull()
+    expect(mockPush).toHaveBeenCalledWith('/')
   })
 })

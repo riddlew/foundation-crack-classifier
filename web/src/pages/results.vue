@@ -1,6 +1,7 @@
 <template>
   <main class="page">
-    <a class="back-link" href="#" @click.prevent="goBack">← Back</a>
+    <button class="back-link" @click="goBack">← Back</button>
+    <h1>Classification Results</h1>
 
     <p v-if="classifyNotes" class="notes-readback">Your notes: {{ classifyNotes }}</p>
 
@@ -13,11 +14,11 @@
         <div
           class="card-header"
           :style="{
-            background: colourMap[item.result.final_label].background,
-            color: colourMap[item.result.final_label].color,
+            background: cardColour(item.result.final_label).background,
+            color: cardColour(item.result.final_label).color,
           }"
         >
-          <span>{{ item.result.severity_level }} — {{ urgencyLabel[item.result.urgency] }}</span>
+          <span>{{ item.result.severity_level }} — {{ urgencyText(item.result.urgency) }}</span>
           <span>{{ item.result.confidence.toFixed(1) }}% confidence</span>
         </div>
         <div class="card-body">
@@ -52,10 +53,11 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { classifyResults, classifyNotes } from '../state/results'
+import type { ClassifierResult } from '../state/results'
 
 const router = useRouter()
 
-const colourMap: Record<string, { background: string; color: string }> = {
+const colourMap: Record<ClassifierResult['final_label'] | 'error', { background: string; color: string }> = {
   level1:  { background: '#e8f5e9', color: '#2e7d32' },
   level2:  { background: '#fff8e1', color: '#f57f17' },
   level3:  { background: '#fff3e0', color: '#e65100' },
@@ -63,11 +65,19 @@ const colourMap: Record<string, { background: string; color: string }> = {
   error:   { background: '#ffebee', color: '#c62828' },
 }
 
-const urgencyLabel: Record<string, string> = {
+const urgencyLabel: Record<ClassifierResult['urgency'], string> = {
   inspection_recommended: 'Inspection recommended',
   contact_soon:           'Contact a professional soon',
   contact_immediately:    'Contact a professional immediately',
   unable_to_assess:       'Unable to assess',
+}
+
+function cardColour(label: ClassifierResult['final_label'] | 'error') {
+  return colourMap[label] ?? colourMap.error
+}
+
+function urgencyText(u: ClassifierResult['urgency']): string {
+  return urgencyLabel[u] ?? u
 }
 
 onMounted(() => {
@@ -92,9 +102,17 @@ function goBack() {
   gap: 1rem;
 }
 
+h1 {
+  margin: 0;
+}
+
 .back-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   color: inherit;
-  text-decoration: none;
   align-self: flex-start;
 }
 
