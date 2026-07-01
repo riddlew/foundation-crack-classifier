@@ -9,8 +9,8 @@
       class="drop-zone"
       :class="{ 'drop-zone--active': isDragging, 'drop-zone--loading': loading }"
       @dragover.prevent
-      @dragenter.prevent="dragDepth++; isDragging = true"
-      @dragleave.prevent="if (--dragDepth === 0) isDragging = false"
+      @dragenter.prevent="onDragEnter"
+      @dragleave.prevent="onDragLeave"
       @drop.prevent="onDrop"
       @click="!loading && fileInput?.click()"
       @keydown.enter.space.prevent="!loading && fileInput?.click()"
@@ -83,6 +83,15 @@ function removeFile(index: number) {
   URL.revokeObjectURL(previews.value[index])
   files.value.splice(index, 1)
   previews.value.splice(index, 1)
+}
+
+function onDragEnter() {
+  dragDepth.value++
+  isDragging.value = true
+}
+
+function onDragLeave() {
+  if (--dragDepth.value === 0) isDragging.value = false
 }
 
 function onDrop(e: DragEvent) {
