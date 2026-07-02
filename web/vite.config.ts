@@ -1,15 +1,16 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
-import Vue from '@vitejs/plugin-vue'
-import VueRouter from 'vue-router/vite'
+import react from '@vitejs/plugin-react'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
 export default defineConfig({
   plugins: [
-    VueRouter(),
-    Vue(),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
+    react(),
   ],
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['./src/test/setup.ts'],
   },
 })

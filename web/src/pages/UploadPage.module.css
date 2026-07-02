@@ -1,0 +1,191 @@
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 48px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.title {
+  margin-bottom: 12px;
+}
+
+.heading {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  color: #647087;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.dropZone {
+  border: 2px dashed #ccc;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.dropZoneActive {
+  border-color: #555;
+  background: #eef4ff;
+}
+
+.dropZoneLoading {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dropZone:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+.dropZone p {
+  margin: 0;
+}
+
+.droptext {
+  font-weight: 700;
+}
+
+.link {
+  color: #2e6fee;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.dropHint {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8a95a6;
+}
+
+.thumbnails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.thumbnail {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.thumbnailBadge {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 14px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.thumbnailRemove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnailRemove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notes label {
+  font-weight: 600;
+  display: block;
+}
+
+.notes label > span {
+  font-weight: normal;
+  color: #647087;
+  font-size: 14px;
+}
+
+.notesDescription {
+  color: #647087;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.notesInput {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.notesInput:disabled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.error {
+  margin: 0;
+  border: 1px solid #c62828;
+  background-color: color-mix(in srgb, #ef4444, transparent 88%);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: #c62828;
+}
+
+.submit {
+  align-self: flex-end;
+  padding: 0.5rem 1.5rem;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit:not(:disabled):hover {
+  background: #111;
+}

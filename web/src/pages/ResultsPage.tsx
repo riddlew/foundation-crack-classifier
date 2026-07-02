@@ -1,0 +1,106 @@
+import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import type { ClassifierResult } from '../lib/classifier';
+import styles from './ResultsPage.module.css';
+import clsx from 'clsx';
+
+const colourMap: Record<ClassifierResult['final_label'] | 'error', {
+	background: string;
+	color: string
+}> = {
+	level1: { background: '#e8f5e9', color: '#2e7d32' },
+	level2: { background: '#fff8e1', color: '#f57f17' },
+	level3: { background: '#fff3e0', color: '#e65100' },
+	unclear: { background: '#f5f5f5', color: '#616161' },
+	error: { background: '#ffebee', color: '#c62828' },
+};
+
+const urgencyLabel: Record<ClassifierResult['urgency'], string> = {
+	inspection_recommended: 'Inspection recommended',
+	contact_soon: 'Contact a professional soon',
+	contact_immediately: 'Contact a professional immediately',
+	unable_to_assess: 'Unable to assess',
+};
+
+function cardColour(label: ClassifierResult['final_label'] | 'error')
+{
+	return colourMap[label] ?? colourMap.error;
+}
+
+function urgencyText(u: ClassifierResult['urgency']): string
+{
+	return urgencyLabel[u] ?? u;
+}
+
+export function ResultsPage()
+{
+	const navigate = useNavigate();
+	const { results, notes } = useLocation({ select: (l) => l.state });
+
+	useEffect(() =>
+	{
+		if (!results)
+		{
+			navigate({ to: '/', replace: true });
+		}
+	}, [results, navigate]);
+
+	if (!results)
+	{
+		return null;
+	}
+
+	return (
+		<main className={styles.page}>
+			<button className={styles.backLink}
+				onClick={() => navigate({ to: '/' })}>
+				← Back
+			</button>
+			<h1>Classification Results</h1>
+
+			{notes && <p className={styles.notesReadback}>Your notes: {notes}</p>}
+
+			{results.results.map((item, index) =>
+				item.ok && item.result ? (
+					<div key={item.filename + index}
+						className={clsx(styles.card, styles[item.result.final_label])}>
+						<div className={styles.cardHeader}>
+							<span className={styles.imageId}>Image #{index + 1}</span>
+              <span>
+                {item.result.severity_level} — {urgencyText(item.result.urgency)}
+              </span>
+						</div>
+						<div className={styles.cardBody}>
+							<div>
+								<p className={styles.filename}>{item.filename}</p>
+							</div>
+							<div>
+								<p className={styles.cardSectionTitle}>Summary</p>
+								<p className={styles.summary}>{item.result.customer_summary}</p>
+								<p className={styles.cardSectionTitle}>Recommended Action</p>
+								<p className={styles.action}>{item.result.recommended_action}</p>
+								<p className={styles.cardConfidence}>Confidence level: {Math.round(item.result.confidence * 100)}%</p>
+							</div>
+						</div>
+					</div>
+				) : (
+					<div key={item.filename + index} className={styles.card}>
+						<div
+							className={styles.cardHeader}
+							style={{
+								background: colourMap.error.background,
+								color: colourMap.error.color,
+							}}
+						>
+							<span>Could not process image</span>
+						</div>
+						<div className={styles.cardBody}>
+							<p className={styles.filename}>{item.filename}</p>
+							<p className={styles.errorMessage}>{item.error}</p>
+						</div>
+					</div>
+				),
+			)}
+		</main>
+	)
+}

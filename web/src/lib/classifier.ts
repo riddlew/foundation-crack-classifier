@@ -1,5 +1,3 @@
-import { ref } from 'vue'
-
 export interface ClassifierResult {
   severity_level: string
   urgency: 'inspection_recommended' | 'contact_soon' | 'contact_immediately' | 'unable_to_assess'
@@ -23,5 +21,11 @@ export interface ClassifyResponse {
   results: FileClassificationResponse[]
 }
 
-export const classifyResults = ref<ClassifyResponse | null>(null)
-export const classifyNotes = ref<string>('')
+// The upload page hands results to the results page through router navigation
+// state, so teach the router what that state carries.
+declare module '@tanstack/history' {
+  interface HistoryState {
+    results?: ClassifyResponse
+    notes?: string
+  }
+}
