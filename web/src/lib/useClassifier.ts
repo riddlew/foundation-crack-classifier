@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import type { ClassifyResponse } from './classifier'
+import { setBatch } from './imageStore'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
@@ -34,7 +35,8 @@ export function useClassifier() {
       }
 
       const data: ClassifyResponse = await response.json()
-      await navigate({ to: '/results', state: { results: data, notes: trimmed } })
+      const imageBatchId = setBatch(files)
+      await navigate({ to: '/results', state: { results: data, notes: trimmed, imageBatchId } })
     } catch {
       setError('Network error — could not reach the classifier service.')
     } finally {

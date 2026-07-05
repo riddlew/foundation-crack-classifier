@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import type { ClassifierResult } from '../lib/classifier';
+import { getUrls } from '../lib/imageStore';
 import styles from './ResultsPage.module.css';
 import clsx from 'clsx';
 
@@ -35,7 +36,8 @@ function urgencyText(u: ClassifierResult['urgency']): string
 export function ResultsPage()
 {
 	const navigate = useNavigate();
-	const { results, notes } = useLocation({ select: (l) => l.state });
+	const { results, notes, imageBatchId } = useLocation({ select: (l) => l.state });
+	const imageUrls = imageBatchId ? getUrls(imageBatchId) : null;
 
 	useEffect(() =>
 	{
@@ -71,7 +73,14 @@ export function ResultsPage()
               </span>
 						</div>
 						<div className={styles.cardBody}>
-							<div>
+							<div className={styles.imageColumn}>
+								{imageUrls?.[index] && (
+									<img
+										className={styles.thumbnail}
+										src={imageUrls[index]}
+										alt={`Uploaded image ${index + 1}`}
+									/>
+								)}
 								<p className={styles.filename}>{item.filename}</p>
 							</div>
 							<div>
@@ -95,7 +104,16 @@ export function ResultsPage()
 							<span>Could not process image</span>
 						</div>
 						<div className={styles.cardBody}>
-							<p className={styles.filename}>{item.filename}</p>
+							<div className={styles.imageColumn}>
+								{imageUrls?.[index] && (
+									<img
+										className={styles.thumbnail}
+										src={imageUrls[index]}
+										alt={`Uploaded image ${index + 1}`}
+									/>
+								)}
+								<p className={styles.filename}>{item.filename}</p>
+							</div>
 							<p className={styles.errorMessage}>{item.error}</p>
 						</div>
 					</div>

@@ -27,5 +27,6 @@ declare module '@tanstack/history' {
   interface HistoryState {
     results?: ClassifyResponse
     notes?: string
+    imageBatchId?: string
   }
 }

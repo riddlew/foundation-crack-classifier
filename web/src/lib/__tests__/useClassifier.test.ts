@@ -2,10 +2,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
 import { useClassifier } from '../useClassifier'
 
-const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }))
+const { mockNavigate, mockSetBatch } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockSetBatch: vi.fn(() => 'test-batch-id'),
+}))
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
+}))
+
+vi.mock('../imageStore', () => ({
+  setBatch: mockSetBatch,
 }))
 
 const FAKE_RESPONSE = {
@@ -35,6 +42,7 @@ function fetchMock() {
 
 beforeEach(() => {
   mockNavigate.mockReset()
+  mockSetBatch.mockClear()
 })
 
 afterEach(() => {
@@ -59,9 +67,14 @@ describe('useClassifier', () => {
     expect(url).toBe('http://localhost:8000/classify')
     expect(init.method).toBe('POST')
     expect((init.body as FormData).get('notes')).toBe('image #1 shows the east wall')
+    expect(mockSetBatch).toHaveBeenCalledWith([file])
     expect(mockNavigate).toHaveBeenCalledWith({
       to: '/results',
-      state: { results: FAKE_RESPONSE, notes: 'image #1 shows the east wall' },
+      state: {
+        results: FAKE_RESPONSE,
+        notes: 'image #1 shows the east wall',
+        imageBatchId: 'test-batch-id',
+      },
     })
     expect(result.current.loading).toBe(false)
     expect(result.current.error).toBeNull()
@@ -95,7 +108,7 @@ describe('useClassifier', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       to: '/results',
-      state: { results: { results: [] }, notes: '' },
+      state: { results: { results: [] }, notes: '', imageBatchId: 'test-batch-id' },
     })
   })
 

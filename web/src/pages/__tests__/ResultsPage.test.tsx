@@ -3,9 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ClassifyResponse } from '../../lib/classifier'
 
-const { mockNavigate, state } = vi.hoisted(() => ({
+const { mockNavigate, mockGetUrls, state } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
-  state: { value: {} as { results?: ClassifyResponse; notes?: string } },
+  mockGetUrls: vi.fn<(id: string) => string[] | null>(() => null),
+  state: {
+    value: {} as { results?: ClassifyResponse; notes?: string; imageBatchId?: string },
+  },
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -14,6 +17,10 @@ vi.mock('@tanstack/react-router', () => ({
     const loc = { state: state.value }
     return opts?.select ? opts.select(loc) : loc
   },
+}))
+
+vi.mock('../../lib/imageStore', () => ({
+  getUrls: mockGetUrls,
 }))
 
 import { ResultsPage } from '../ResultsPage'
@@ -41,6 +48,8 @@ const validResponse: ClassifyResponse = {
 
 beforeEach(() => {
   mockNavigate.mockReset()
+  mockGetUrls.mockReset()
+  mockGetUrls.mockReturnValue(null)
   state.value = {}
 })
 
@@ -90,6 +99,22 @@ describe('results page', () => {
     expect(screen.getByText('Could not process image')).toBeInTheDocument()
     expect(screen.getByText('bad.jpg')).toBeInTheDocument()
     expect(screen.getByText('Decode failed')).toBeInTheDocument()
+  })
+
+  it('renders the uploaded image when the batch resolves', () => {
+    state.value = { results: validResponse, imageBatchId: 'b1' }
+    mockGetUrls.mockReturnValue(['blob:mock/photo-0'])
+    render(<ResultsPage />)
+    const img = screen.getByRole('img')
+    expect(img).toHaveAttribute('src', 'blob:mock/photo-0')
+    expect(mockGetUrls).toHaveBeenCalledWith('b1')
+  })
+
+  it('renders no image when the batch cannot be resolved', () => {
+    state.value = { results: validResponse, imageBatchId: 'stale' }
+    mockGetUrls.mockReturnValue(null)
+    render(<ResultsPage />)
+    expect(screen.queryByRole('img')).toBeNull()
   })
 
   it('navigates home on back', async () => {
